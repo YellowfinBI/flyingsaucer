@@ -5,7 +5,14 @@
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.0.9-yf-v2</version> <!-- To compile, change yf-v2 to SNAPSHOT -->
+  <version>${revision}</version>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <revision>9.0.9-yf-v2</revision> <!-- Version number -->
+  </properties>
+
 
   <packaging>pom</packaging>
 
@@ -123,9 +130,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 
 </project>
