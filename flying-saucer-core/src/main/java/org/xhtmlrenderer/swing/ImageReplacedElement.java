@@ -21,6 +21,7 @@ package org.xhtmlrenderer.swing;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -49,6 +50,7 @@ public class ImageReplacedElement implements ReplacedElement {
      * @param targetWidth The width we'd like the image to have, in pixels.
      * @param targetHeight The height we'd like the image to have, in pixels.
      */
+    
     public ImageReplacedElement(Image image, int targetWidth, int targetHeight) {
 		if (targetWidth > 0 || targetHeight > 0) {
             int w = image.getWidth(null);
@@ -64,10 +66,28 @@ public class ImageReplacedElement implements ReplacedElement {
 	        if (newH == -1) {
 	            newH = (int)(h * ((double)newW / w));
 	        }
-
+	        
 			if (w != newW || h != newH) {
+				boolean hasAlpha = false;
+				if(image instanceof BufferedImage) {
+					ColorModel cm = ((BufferedImage) image).getColorModel();
+					hasAlpha = cm.hasAlpha();
+				}
+				
                 if (image instanceof BufferedImage) {
-                    image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
+                	if(hasAlpha) {
+                        BufferedImage src = (BufferedImage) image;
+                        BufferedImage scaled = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D g2d = scaled.createGraphics();
+                        g2d.setComposite(AlphaComposite.Src);
+                        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                        g2d.drawImage(src, 0, 0, newW, newH, null);
+                        g2d.dispose();
+                        image = scaled;
+                	}else {
+                		image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
+                	}
+                    
                 } else {
                    String scalingType = Configuration.valueFor("xr.image.scale", "HIGH").trim() ;
 
